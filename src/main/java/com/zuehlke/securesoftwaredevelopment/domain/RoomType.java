@@ -13,7 +13,8 @@ public class RoomType {
     public RoomType() {
     }
 
-    public RoomType(Integer hotelId, String name, Integer capacity, BigDecimal pricePerNight, Integer totalRooms) {
+    public RoomType(Integer id, Integer hotelId, String name, Integer capacity, BigDecimal pricePerNight, Integer totalRooms) {
+        this.id = id;
         this.hotelId = hotelId;
         this.name = name;
         this.capacity = capacity;

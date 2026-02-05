@@ -36,7 +36,7 @@ public class LoginController {
 
         // Used for QR Code
         final HashedUser user = (HashedUser) authentication.getPrincipal();;
-        String totpUrl = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL("Book Shop", user.getUsername(), key);
+        String totpUrl = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL("RBS Secure Travel Agency", user.getUsername(), key);
         model.addAttribute("totpUrl", totpUrl);
 
         return "register-totp";

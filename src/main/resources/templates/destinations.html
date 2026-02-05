@@ -6,75 +6,77 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Book Search</title>
+    <title>Destination Search</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1>Books</h1>
+    <h1>Destinations</h1>
     <div class="container">
         <div class="input-group mb-3">
             <input type="text" id="searchQuery" class="form-control">
             <div class="input-group-append">
-                <button class="btn btn-outline-primary" id="booksearchButton" type="button" onclick="search()">Search
+                <button class="btn btn-outline-primary" id="destinationSearchButton" type="button" onclick="search()">
+                    Search
                 </button>
             </div>
         </div>
+
         <p class="invisible">You searched for: <span id="searchTerm"></span></p>
-        <p class="invisible text-danger" id="booksearchErrorMessage">Sorry, we are facing some problems! Please try again
-            later.</p>
+        <p class="invisible text-danger" id="destinationSearchErrorMessage">
+            Sorry, we are facing some problems! Please try again later.
+        </p>
+
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Title</th>
-                <th scope="col">Author</th>
-                <th scope="col">Description</th>
-                <th scope="col">Price</th>
+                <th scope="col">Name</th>
+                <th scope="col">City</th>
+                <th scope="col">Details</th>
                 <th></th>
             </tr>
             </thead>
-            <tbody id="booksTableContent">
-            <tr th:each="book: ${books}">
-                <td th:text="${book.id}"></td>
-                <td th:text="${book.name}"></td>
-                <td th:text="${book.author}"></td>
-                <td th:text="${book.price}"></td>
-                <td><a th:href="@{/books(id=${book.id})}">Details</a></td>
+
+            <tbody id="destinationsTableContent">
+            <tr th:each="destination : ${destinations}">
+                <td th:text="${destination.id}"></td>
+                <td th:text="${destination.name}"></td>
+                <td th:text="${destination.cityName}"></td>
+                <td><a th:href="@{/destinations(id=${destination.id})}">Details</a></td>
             </tr>
             </tbody>
         </table>
-        <a href="/create-form">Add Book</a>
+
+        <a href="/destinations/create-form">Add Destination</a>
     </div>
+
     <template id="row-template">
         <tr>
             <td>id</td>
-            <td>title</td>
-            <td>description</td>
-            <td>price</td>
+            <td>name</td>
+            <td>city</td>
             <td>link</td>
         </tr>
     </template>
+
     <script>
-        function addRow(book) {
+        function addRow(destination) {
             const template = document.getElementById('row-template');
             const row = document.importNode(template.content, true);
             const tds = row.querySelectorAll('td');
 
-            tds[0].textContent = book.id;
-            tds[1].textContent = book.name;
-            tds[2].textContent = book.author;
-            tds[3].textContent = book.price;
-            tds[4].innerHTML = `<a href="/books?id=${book.id}">Details</a>`;
+            tds[0].textContent = destination.id;
+            tds[1].textContent = destination.name;
+            tds[2].innerHTML = destination.cityName;
+            tds[3].innerHTML = `<a href="/destinations?id=${destination.id}">Details</a>`;
 
-            const tbody = document.querySelector('tbody');
+            const tbody = document.querySelector('#destinationsTableContent');
             tbody.appendChild(row);
         }
 
         function clearSearchResults() {
-            const table = document.querySelector('table');
-            while (table.rows.length > 1) {
-                table.deleteRow(1);
-            }
+            const tbody = document.querySelector('#destinationsTableContent');
+            tbody.innerHTML = '';
         }
 
         function updateSearchTerm(searchQuery) {
@@ -84,13 +86,11 @@
         }
 
         function showErrorMessage() {
-            const errorMessage = document.getElementById('booksearchErrorMessage');
-            errorMessage.classList.remove('invisible');
+            document.getElementById('destinationSearchErrorMessage').classList.remove('invisible');
         }
 
         function hideErrorMessage() {
-            const errorMessage = document.getElementById('booksearchErrorMessage');
-            errorMessage.classList.add('invisible');
+            document.getElementById('destinationSearchErrorMessage').classList.add('invisible');
         }
 
         function handleErrors(response) {
@@ -104,8 +104,8 @@
             return document.getElementById('searchQuery').value;
         }
 
-        function updateSearchResults(bookList) {
-            bookList.forEach(addRow);
+        function updateSearchResults(destinationList) {
+            destinationList.forEach(addRow);
         }
 
         function search() {
@@ -114,7 +114,8 @@
 
             const searchQuery = getSearchQuery();
             updateSearchTerm(searchQuery);
-            fetch(`/api/books/search?query=${searchQuery}`)
+
+            fetch(`/api/destinations/search?query=${encodeURIComponent(searchQuery)}`)
                 .then(handleErrors)
                 .then(response => response.json())
                 .then(updateSearchResults)
@@ -127,8 +128,7 @@
             }
         }
 
-        const searchQueryInput = document.getElementById('searchQuery');
-        searchQueryInput.addEventListener('keyup', onEnter);
+        document.getElementById('searchQuery').addEventListener('keyup', onEnter);
     </script>
 </div>
 </body>

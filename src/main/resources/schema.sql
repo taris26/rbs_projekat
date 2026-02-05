@@ -70,7 +70,7 @@ create table hotel
     cityId      int          NOT NULL,
     name        varchar(200) NOT NULL,
     description varchar(511) NOT NULL,
-    address     varchar(255)
+    address     varchar(255) NOT NULL
 );
 
 CREATE TABLE roomType

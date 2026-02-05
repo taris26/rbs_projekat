@@ -1,13 +1,10 @@
 package com.zuehlke.securesoftwaredevelopment.controller;
 
-import com.zuehlke.securesoftwaredevelopment.domain.Comment;
 import com.zuehlke.securesoftwaredevelopment.domain.Rating;
 import com.zuehlke.securesoftwaredevelopment.domain.User;
-import com.zuehlke.securesoftwaredevelopment.repository.CommentRepository;
 import com.zuehlke.securesoftwaredevelopment.repository.RatingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +26,6 @@ public class RatingsController {
         rating.setUserId(user.getId());
         ratingRepository.createOrUpdate(rating);
 
-        return "redirect:/books?id=" + rating.getBookId();
+        return "redirect:/destinations?id=" + rating.getDestinationId();
     }
 }

@@ -2,24 +2,24 @@ package com.zuehlke.securesoftwaredevelopment.domain;
 
 public class Rating {
 
-    private int bookId;
+    private int destinationId;
 
     private int userId;
 
     private int rating;
 
-    public Rating(int bookId, int userId, int rating) {
-        this.bookId = bookId;
+    public Rating(int destinationId, int userId, int rating) {
+        this.destinationId = destinationId;
         this.userId = userId;
         this.rating = rating;
     }
 
-    public int getBookId() {
-        return bookId;
+    public int getDestinationId() {
+        return destinationId;
     }
 
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
+    public void setDestinationId(int destinationId) {
+        this.destinationId = destinationId;
     }
 
     public int getUserId() {

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>New Hotel</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>New hotel</h1>
+
+    <form id="hotelForm" class="col-6" method="POST" th:action="@{/hotels/create}">
+        <div class="form-group">
+
+            <!-- City -->
+            <label for="cityId">City</label>
+            <select id="cityId" name="cityId" class="form-control" required>
+                <option value="" selected disabled>Select city</option>
+                <option th:each="c : ${cities}"
+                        th:value="${c.id}"
+                        th:text="${c.name}">
+                </option>
+            </select>
+            <span id="cityError" style="color: red; display: none;">Please select a city.</span>
+
+            <!-- Name -->
+            <label class="mt-2" for="name">Hotel name</label>
+            <input type="text" id="name" name="name" class="form-control" required/>
+            <span id="nameError" style="color: red; display: none;">Name must be between 2 and 200 characters.</span>
+
+            <!-- Description -->
+            <label class="mt-2" for="description">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+            <span id="descError" style="color: red; display: none;">Description must be between 10 and 511 characters.</span>
+
+            <!-- Address (optional in DB) -->
+            <label class="mt-2" for="address">Address (optional)</label>
+            <input type="text" id="address" name="address" class="form-control"/>
+            <span id="addrError" style="color: red; display: none;">Address must be 0–255 characters.</span>
+
+            <!-- Optional server-side flags -->
+            <div class="text-danger mt-2" th:if="${hotelInvalid == true}">
+                Please check the form fields (name/description/address).
+            </div>
+            <div class="text-danger mt-1" th:if="${cityMissing == true}">
+                Please select a city!
+            </div>
+            <div class="text-danger mt-1" th:if="${hotelExists == true}">
+                A hotel with this name already exists in the selected city!
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-success mt-2">Create</button>
+    </form>
+
+    <hr/>
+
+    <h2>Hotels</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Hotel</th>
+            <th scope="col">City</th>
+            <th scope="col">Address</th>
+        </tr>
+        </thead>
+
+        <tbody id="hotelsTableContent">
+        <tr th:each="hotel : ${hotels}">
+            <td th:text="${hotel.id}"></td>
+            <td th:text="${hotel.name}"></td>
+
+            <!-- If Hotel has relation: hotel.city.name -->
+            <td th:text="${hotel.city != null ? hotel.city.name : hotel.cityName}"></td>
+
+            <td th:text="${hotel.address}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById("hotelForm").addEventListener("submit", function (event) {
+            let isValid = true;
+
+            const cityId = document.getElementById("cityId").value;
+            const name = document.getElementById("name").value.trim();
+            const desc = document.getElementById("description").value.trim();
+            const addr = document.getElementById("address").value.trim();
+
+            // City required
+            if (!cityId) {
+                document.getElementById("cityError").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("cityError").style.display = "none";
+            }
+
+            // Name 2..200
+            if (name.length < 2 || name.length > 200) {
+                document.getElementById("nameError").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("nameError").style.display = "none";
+            }
+
+            // Description 10..511
+            if (desc.length < 10 || desc.length > 511) {
+                document.getElementById("descError").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("descError").style.display = "none";
+            }
+
+            // Address 0..255 (optional)
+            if (addr.length > 255) {
+                document.getElementById("addrError").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("addrError").style.display = "none";
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

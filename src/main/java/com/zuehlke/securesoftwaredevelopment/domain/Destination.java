@@ -3,15 +3,17 @@ package com.zuehlke.securesoftwaredevelopment.domain;
 public class Destination {
     private Integer id;
     private Integer cityId;
+    private String cityName;
     private String name;
     private String description;
 
     public Destination() {
     }
 
-    public Destination(Integer id, Integer cityId, String name, String description) {
+    public Destination(Integer id, Integer cityId, String cityName, String name, String description) {
         this.id = id;
         this.cityId = cityId;
+        this.cityName = cityName;
         this.name = name;
         this.description = description;
     }
@@ -30,6 +32,14 @@ public class Destination {
 
     public void setCityId(Integer cityId) {
         this.cityId = cityId;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 
     public String getName() {

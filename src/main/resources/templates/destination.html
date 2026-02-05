@@ -6,38 +6,33 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Book Details</title>
+    <title>Destination Details</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1>Book details</h1>
+    <h1>Destination details</h1>
+
     <div class="row">
         <form class="col-5">
             <div class="form-group">
-                <b><label>Name:</label></b>
-                <label th:text="${book.name}"></label>
+                <b><label>ID:</label></b>
+                <label th:text="${destination.id}"></label>
             </div>
+
             <div class="form-group">
-                <b><label>Author:</label></b>
-                <label th:text="${book.author}"></label>
+                <b><label>Name:</label></b>
+                <label th:text="${destination.name}"></label>
             </div>
+
+            <div class="form-group">
+                <b><label>City:</label></b>
+                <!-- If you only have cityId, change this to ${destination.cityId} -->
+                <label th:text="${destination.cityName}"></label>
+            </div>
+
             <div class="form-group">
                 <b><label>Description:</label></b>
-                <label style="text-align: justify; display: block;" th:text="${book.description}"></label>
-            </div>
-            <div class="form-group">
-                <b><label>Price:</label></b>
-                <label th:text="${book.price}"></label>
-            </div>
-            <div class="form-group">
-                <b><label>Tags</label></b>
-                <table class="table">
-                    <tbody id="tagsTableContent">
-                    <tr th:each="tag: ${book.tags}">
-                        <td th:text="${tag.name}"></td>
-                    </tr>
-                    </tbody>
-                </table>
+                <label style="text-align: justify; display: block;" th:text="${destination.description}"></label>
             </div>
             <div class="form-group">
                 <label>Rating:</label>
@@ -58,37 +53,32 @@
                 <label for="4">4</label>
                 <input type="radio" id="5" name="rating" value="5">
                 <label for="5">5</label>
-                <button id="rateBook" class="btn btn-primary mt-2">Rate</button>
+                <button id="rateDestination" class="btn btn-primary mt-2">Rate</button>
             </div>
         </form>
     </div>
     <div class="mt-2 mb-2">
-        <a th:href="@{'/buy-book/' + ${book.id}}">Buy book</a>
+        <a th:href="@{'/reservations/new/' + ${destination.id}}">Create a reservation</a>
     </div>
-    <h2 id="book-comments">Book comments</h2>
-    <div class="form-group" th:each="comment,iter : ${comments}">
-        <b th:text="${comment.personName}"></b>
-        <div class="form-control" th:id="${iter.index}" th:utext="${comment.comment}" disabled></div>
-    </div>
-    <div class="form-group">
-        <label for="addComment">Add comment</label>
-        <textarea class="form-control" id="addComment" rows="3" placeholder="Comment..."></textarea>
-        <button id="createComment" class="btn btn-primary mt-2">Create comment</button>
+
+    <div class="mt-2 mb-2">
+        <a href="/destinations">Back to destinations</a>
+        &nbsp;|&nbsp;
+        <a th:href="@{/destinations/edit-form(id=${destination.id})}">Edit destination</a>
     </div>
 
     <script th:inline="javascript">
-        const bookID = [[${book.id}]];
+        const destinationId = [[${destination.id}]];
     </script>
-
     <script>
         window.addEventListener('load', function () {
 
-            document.getElementById("rateBook").addEventListener("click", function () {
+            document.getElementById("rateDestination").addEventListener("click", function () {
                 const rating = document.querySelector('input[name="rating"]:checked').value;
                 fetch('/ratings', {
                     method: 'POST',
                     body: JSON.stringify({
-                        bookId: bookID,
+                        destinationId: destinationId,
                         rating: rating
                     }),
                     headers: {
@@ -96,23 +86,6 @@
                     }
                 }).then(function () {
                     console.log(window.location)
-                    window.location.reload();
-                });
-            });
-
-            document.getElementById("createComment").addEventListener("click", function () {
-                const comment = document.getElementById("addComment").value;
-
-                fetch('/comments', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        bookId: bookID,
-                        comment: comment
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(function () {
                     window.location.reload();
                 });
             });

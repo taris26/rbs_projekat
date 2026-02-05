@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>New Country</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>New country</h1>
+
+    <form id="countryForm" class="col-5" method="POST" th:action="@{/countries/create}">
+        <div class="form-group">
+            <label for="name">Country name</label>
+            <input type="text" id="name" name="name" class="form-control"/>
+
+            <span id="nameError" style="color: red; display: none;">
+                Name must be between 2 and 100 characters.
+            </span>
+
+            <!-- Optional server-side error flags -->
+            <div class="text-danger mt-1" th:if="${nameTaken == true}">
+                Country name already exists!
+            </div>
+            <div class="text-danger mt-1" th:if="${nameInvalid == true}">
+                Name must be between 2 and 100 characters.
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Create</button>
+    </form>
+
+    <hr/>
+
+    <h2>Countries</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+        </tr>
+        </thead>
+        <tbody id="countriesTableContent">
+        <tr th:each="country : ${countries}">
+            <td th:text="${country.id}"></td>
+            <td th:text="${country.name}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById("countryForm").addEventListener("submit", function (event) {
+            const name = document.getElementById("name").value.trim();
+
+            let isValid = true;
+
+            if (name.length < 2 || name.length > 100) {
+                const nameError = document.getElementById("nameError");
+                nameError.style.display = "block";
+                nameError.textContent = "Name must be between 2 and 100 characters.";
+                isValid = false;
+            } else {
+                document.getElementById("nameError").style.display = "none";
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

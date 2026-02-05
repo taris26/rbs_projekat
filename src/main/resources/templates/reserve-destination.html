@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Create Reservation</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>Create reservation</h1>
+
+    <div class="row" th:unless="${created == true}">
+        <form id="reservationForm" class="col-5" method="POST" th:action="@{/reservations/create}">
+            <div class="form-group">
+                <div class="mt-2" th:if="${hotels != null}">
+                    <label for="hotelId">Hotel</label>
+                    <select id="hotelId" name="hotelId" class="form-control" required>
+                        <option value="" selected disabled>Select hotel</option>
+                        <option th:each="hotel : ${hotels}"
+                                th:value="${hotel.id}"
+                                th:text="${hotel.name}">
+                        </option>
+                    </select>
+                </div>
+                <div class="mt-2" th:if="${hotels == null}">
+                    <label for="hotelIdFallback">Hotel ID</label>
+                    <input type="number" id="hotelIdFallback" name="hotelId" class="form-control" min="1" required/>
+                </div>
+                <div class="text-danger mb-1" th:if="${hotelError == true}">Hotel is required!</div>
+
+                <div class="mt-2">
+                    <label for="roomTypeId">Room type</label>
+                    <select id="roomTypeId" name="roomTypeId" class="form-control" required disabled>
+                        <option value="" selected disabled>Select hotel first</option>
+                    </select>
+                    <div id="roomTypeLoadError" class="text-danger mt-1 invisible">
+                        Could not load room types for this hotel.
+                    </div>
+                </div>
+                <div class="text-danger mb-1" th:if="${roomTypeError == true}">Room type is required!</div>
+
+                <div class="mt-2">
+                    <label for="startDate">Start date</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control" required/>
+
+                    <label class="mt-2" for="endDate">End date</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control" required/>
+                </div>
+                <span id="dateError" style="color: red; display: none;">End date must be after start date.</span>
+                <div class="text-danger mb-1" th:if="${dateError == true}">End date must be after start date!</div>
+
+                <!-- COUNTS -->
+                <div class="mt-2">
+                    <label for="roomsCount">Number of rooms</label>
+                    <input type="number" id="roomsCount" name="roomsCount" class="form-control" min="1" required/>
+
+                    <label class="mt-2" for="guestsCount">Number of guests</label>
+                    <input type="number" id="guestsCount" name="guestsCount" class="form-control" min="1" required/>
+                </div>
+
+                <span id="countError" style="color: red; display: none;">Rooms and guests must be positive numbers.</span>
+            </div>
+
+            <button type="submit" class="btn btn-success mt-2">Create reservation</button>
+        </form>
+    </div>
+
+    <div class="text-success" th:if="${created == true}">
+        Reservation successfully created!
+    </div>
+
+    <div class="text-danger" th:if="${createError == true}">
+        Sorry, reservation could not be created. Please try again.
+    </div>
+
+    <script>
+        function showRoomTypeError(msg) {
+            const el = document.getElementById("roomTypeLoadError");
+            el.textContent = msg;
+            el.classList.remove("invisible");
+        }
+
+        function hideRoomTypeError() {
+            document.getElementById("roomTypeLoadError").classList.add("invisible");
+        }
+
+        function resetRoomTypes(message) {
+            const roomSelect = document.getElementById("roomTypeId");
+            roomSelect.innerHTML = "";
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.disabled = true;
+            opt.selected = true;
+            opt.textContent = message;
+            roomSelect.appendChild(opt);
+            roomSelect.disabled = true;
+        }
+
+        function populateRoomTypes(roomTypes) {
+            const roomSelect = document.getElementById("roomTypeId");
+            roomSelect.innerHTML = "";
+
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            placeholder.textContent = "Select room type";
+            roomSelect.appendChild(placeholder);
+
+            roomTypes.forEach(rt => {
+                const opt = document.createElement("option");
+                opt.value = rt.id;
+
+                // show more info if present (safe fallbacks)
+                const cap = rt.capacity ?? "";
+                const price = rt.pricePerNight ?? "";
+                const rooms = rt.totalRooms ?? "";
+
+                let label = rt.name;
+                const details = [];
+                if (cap !== "") details.push(`cap: ${cap}`);
+                if (price !== "") details.push(`€${price}`);
+                if (rooms !== "") details.push(`rooms: ${rooms}`);
+                if (details.length > 0) label += ` (${details.join(", ")})`;
+
+                opt.textContent = label;
+                roomSelect.appendChild(opt);
+            });
+
+            roomSelect.disabled = false;
+        }
+
+        async function loadRoomsForHotel(hotelId) {
+            resetRoomTypes("Loading room types...");
+            hideRoomTypeError();
+
+            try {
+                const response = await fetch(`/api/hotels/${hotelId}/room-types`);
+                if (!response.ok) throw new Error("Bad response");
+
+                const roomTypes = await response.json();
+                if (!Array.isArray(roomTypes) || roomTypes.length === 0) {
+                    resetRoomTypes("No room types available");
+                    return;
+                }
+
+                populateRoomTypes(roomTypes);
+            } catch (e) {
+                resetRoomTypes("Select hotel first");
+                showRoomTypeError("Could not load room types for this hotel.");
+            }
+        }
+
+        const hotelSelect = document.getElementById("hotelId");
+        if (hotelSelect) {
+            hotelSelect.addEventListener("change", function () {
+                const hotelId = this.value;
+                if (hotelId) loadRoomsForHotel(hotelId);
+            });
+        }
+
+        document.getElementById("reservationForm").addEventListener("submit", function (event) {
+            let isValid = true;
+
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+
+            if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+                document.getElementById("dateError").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("dateError").style.display = "none";
+            }
+
+            const roomsCount = parseInt(document.getElementById("roomsCount").value, 10);
+            const guestsCount = parseInt(document.getElementById("guestsCount").value, 10);
+
+            if (!(roomsCount > 0) || !(guestsCount > 0)) {
+                document.getElementById("countError").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("countError").style.display = "none";
+            }
+
+            // Make sure a room type is selected
+            const roomTypeId = document.getElementById("roomTypeId").value;
+            if (!roomTypeId) {
+                showRoomTypeError("Please select a room type.");
+                isValid = false;
+            }
+
+            if (!isValid) event.preventDefault();
+        });
+
+        resetRoomTypes("Select hotel first");
+    </script>
+</div>
+</body>
+</html>

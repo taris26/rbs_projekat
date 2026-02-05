@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>New City</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>New city</h1>
+
+    <form id="cityForm" class="col-5" method="POST" th:action="@{/cities/create}">
+        <div class="form-group">
+
+            <label for="countryId">Country</label>
+            <select id="countryId" name="countryId" class="form-control" required>
+                <option value="" selected disabled>Select country</option>
+                <option th:each="c : ${countries}"
+                        th:value="${c.id}"
+                        th:text="${c.name}">
+                </option>
+            </select>
+            <span id="countryError" style="color: red; display: none;">Please select a country.</span>
+
+            <label class="mt-2" for="name">City name</label>
+            <input type="text" id="name" name="name" class="form-control" required/>
+            <span id="nameError" style="color: red; display: none;">Name must be between 2 and 255 characters.</span>
+
+            <!-- Optional server-side flags -->
+            <div class="text-danger mt-1" th:if="${cityInvalid == true}">
+                City name must be between 2 and 255 characters!
+            </div>
+            <div class="text-danger mt-1" th:if="${countryMissing == true}">
+                Please select a country!
+            </div>
+            <div class="text-danger mt-1" th:if="${cityExists == true}">
+                This city already exists in the selected country!
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-success mt-2">Create</button>
+    </form>
+
+    <hr/>
+
+    <h2>Cities</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">City</th>
+            <th scope="col">Country</th>
+        </tr>
+        </thead>
+
+        <tbody id="citiesTableContent">
+        <tr th:each="city : ${cities}">
+            <td th:text="${city.id}"></td>
+            <td th:text="${city.name}"></td>
+
+            <!-- If City has relation: city.country.name -->
+            <td th:text="${city.country != null ? city.country.name : city.countryName}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById("cityForm").addEventListener("submit", function (event) {
+            let isValid = true;
+
+            const countryId = document.getElementById("countryId").value;
+            const name = document.getElementById("name").value.trim();
+
+            // Country must be selected
+            if (!countryId) {
+                document.getElementById("countryError").style.display = "block";
+                isValid = false;
+            } else {
+                document.getElementById("countryError").style.display = "none";
+            }
+
+            // Name 2..255 chars
+            if (name.length < 2 || name.length > 255) {
+                const nameError = document.getElementById("nameError");
+                nameError.style.display = "block";
+                nameError.textContent = "Name must be between 2 and 255 characters.";
+                isValid = false;
+            } else {
+                document.getElementById("nameError").style.display = "none";
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</div>
+</body>
+</html>
