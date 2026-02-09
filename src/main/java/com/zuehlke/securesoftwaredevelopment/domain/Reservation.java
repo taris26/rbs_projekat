@@ -7,7 +7,9 @@ public class Reservation {
     private Integer id;
     private Integer userId;
     private Integer hotelId;
+    private String hotelName;
     private Integer roomTypeId;
+    private String roomTypeName;
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer roomsCount;
@@ -23,6 +25,37 @@ public class Reservation {
         this.userId = userId;
         this.hotelId = hotelId;
         this.roomTypeId = roomTypeId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.roomsCount = roomsCount;
+        this.guestsCount = guestsCount;
+        this.totalPrice = totalPrice;
+    }
+
+    public Reservation(Integer userId, Integer hotelId, String hotelName, Integer roomTypeId,
+                       String roomTypeName, LocalDate startDate, LocalDate endDate,
+                       Integer roomsCount, Integer guestsCount, BigDecimal totalPrice) {
+        this.userId = userId;
+        this.hotelId = hotelId;
+        this.hotelName = hotelName;
+        this.roomTypeId = roomTypeId;
+        this.roomTypeName = roomTypeName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.roomsCount = roomsCount;
+        this.guestsCount = guestsCount;
+        this.totalPrice = totalPrice;
+    }
+
+    public Reservation(Integer id, Integer userId, Integer hotelId, String hotelName, Integer roomTypeId,
+                       String roomTypeName, LocalDate startDate, LocalDate endDate,
+                       Integer roomsCount, Integer guestsCount, BigDecimal totalPrice) {
+        this.id = id;
+        this.userId = userId;
+        this.hotelId = hotelId;
+        this.hotelName = hotelName;
+        this.roomTypeId = roomTypeId;
+        this.roomTypeName = roomTypeName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.roomsCount = roomsCount;
@@ -54,12 +87,28 @@ public class Reservation {
         this.hotelId = hotelId;
     }
 
+    public String getHotelName() {
+        return hotelName;
+    }
+
+    public void setHotelName(String hotelName) {
+        this.hotelName = hotelName;
+    }
+
     public Integer getRoomTypeId() {
         return roomTypeId;
     }
 
     public void setRoomTypeId(Integer roomTypeId) {
         this.roomTypeId = roomTypeId;
+    }
+
+    public String getRoomTypeName() {
+        return roomTypeName;
+    }
+
+    public void setRoomTypeName(String roomTypeName) {
+        this.roomTypeName = roomTypeName;
     }
 
     public LocalDate getStartDate() {

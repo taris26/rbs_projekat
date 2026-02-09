@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Create Reservation</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>Create reservation</h1>
+
+    <div class="row" th:unless="${created == true}">
+        <form id="reservationForm" class="col-5" method="POST" th:action="@{/reservations/create}">
+            <div class="form-group">
+                <input type="hidden" id="hotelId" name="hotelId" class="form-control" th:value="${hotel.id}"/>
+
+                <div class="form-group">
+                    <b><label>Name:</label></b>
+                    <label th:text="${hotel.name}"></label>
+                </div>
+
+                <div class="form-group">
+                    <b><label>City:</label></b>
+                    <label th:text="${hotel.cityName}"></label>
+                </div>
+                <div class="text-danger mb-1" th:if="${hotelError == true}">Hotel is required!</div>
+
+                <div class="mt-2">
+                    <label for="roomTypeId">Room type</label>
+                    <select id="roomTypeId" name="roomTypeId" class="form-control" required>
+                        <option value="" selected disabled>Select room type</option>
+                        <option th:each="room : ${roomTypes}"
+                                th:value="${room.id}"
+                                th:text="'Cap :' + ${room.capacity} + ' price: €' + ${room.pricePerNight} + ' rooms: ' + ${room.totalRooms}">
+                        </option>
+                    </select>
+                </div>
+                <div class="text-danger mb-1" th:if="${roomTypeError == true}">Room type is required!</div>
+
+                <div class="mt-2">
+                    <label for="startDate">Start date</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control" required/>
+
+                    <label class="mt-2" for="endDate">End date</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control" required/>
+                </div>
+                <span id="dateError" style="color: red; display: none;">End date must be after start date.</span>
+                <div class="text-danger mb-1" th:if="${dateError == true}">End date must be after start date!</div>
+                <div class="mt-2">
+                    <label for="roomsCount">Number of rooms</label>
+                    <input type="number" id="roomsCount" name="roomsCount" class="form-control" min="1" required/>
+
+                    <label class="mt-2" for="guestsCount">Number of guests</label>
+                    <input type="number" id="guestsCount" name="guestsCount" class="form-control" min="1" required/>
+                </div>
+
+                <span id="countError" style="color: red; display: none;">Rooms and guests must be positive numbers.</span>
+            </div>
+
+            <button type="submit" class="btn btn-success mt-2">Create reservation</button>
+        </form>
+    </div>
+
+    <div class="text-success" th:if="${created == true}">
+        Reservation successfully created!
+    </div>
+
+    <div class="text-danger" th:if="${createError == true}">
+        Sorry, reservation could not be created. Please try again.
+    </div>
+</div>
+</body>
+</html>

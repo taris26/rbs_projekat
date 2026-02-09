@@ -35,18 +35,6 @@ values (3, 'Athens');
 insert into city (countryId, name)
 values (3, 'Thessaloniki');
 
-insert into destination (cityId, name, description)
-values (1, 'Kalemegdan Fortress', 'Historic fortress and park with views over the rivers.');
-
-insert into destination (cityId, name, description)
-values (3, 'Colosseum', 'Ancient Roman amphitheatre and one of the most famous landmarks in the world.');
-
-insert into destination (cityId, name, description)
-values (5, 'Acropolis', 'Ancient citadel featuring the Parthenon and iconic city views.');
-
-insert into destination (cityId, name, description)
-values (6, 'White Tower', 'Famous tower and museum, symbol of Thessaloniki.');
-
 insert into hotel (cityId, name, description, address)
 values (1, 'Danube View Hotel', 'Modern hotel near the river promenade.', 'Cara Urosa 10, Belgrade');
 
@@ -86,7 +74,7 @@ insert into reservation
 (userId, hotelId, roomTypeId, startDate, endDate, roomsCount, guestsCount, totalPrice)
 values (1, 3, 6, DATE '2026-05-15', DATE '2026-05-18', 1, 3, 507.00);
 
-insert into ratings(destinationId, userId, rating)
+insert into ratings(hotelId, userId, rating)
 values (1, 3, 5),
        (3, 2, 1),
        (3, 1, 3),

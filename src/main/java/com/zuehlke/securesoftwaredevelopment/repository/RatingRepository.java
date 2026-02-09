@@ -15,16 +15,16 @@ public class RatingRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(RatingRepository.class);
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public RatingRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     public void createOrUpdate(Rating rating) {
-        String query = "SELECT destinationId, userId, rating FROM ratings WHERE destinationId = " + rating.getDestinationId() + " AND userID = " + rating.getUserId();
-        String query2 = "update ratings SET rating = ? WHERE destinationId = ? AND userId = ?";
-        String query3 = "insert into ratings(destinationId, userId, rating) values (?, ?, ?)";
+        String query = "SELECT hotelId, userId, rating FROM ratings WHERE hotelId = " + rating.getHotelId() + " AND userID = " + rating.getUserId();
+        String query2 = "update ratings SET rating = ? WHERE hotelId = ? AND userId = ?";
+        String query3 = "insert into ratings(hotelId, userId, rating) values (?, ?, ?)";
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
@@ -33,12 +33,12 @@ public class RatingRepository {
             if (rs.next()) {
                 PreparedStatement preparedStatement = connection.prepareStatement(query2);
                 preparedStatement.setInt(1, rating.getRating());
-                preparedStatement.setInt(2, rating.getDestinationId());
+                preparedStatement.setInt(2, rating.getHotelId());
                 preparedStatement.setInt(3, rating.getUserId());
                 preparedStatement.executeUpdate();
             } else {
                 PreparedStatement preparedStatement = connection.prepareStatement(query3);
-                preparedStatement.setInt(1, rating.getDestinationId());
+                preparedStatement.setInt(1, rating.getHotelId());
                 preparedStatement.setInt(2, rating.getUserId());
                 preparedStatement.setInt(3, rating.getRating());
                 preparedStatement.executeUpdate();
@@ -48,9 +48,9 @@ public class RatingRepository {
         }
     }
 
-    public List<Rating> getAll(String destinationId) {
+    public List<Rating> getAll(String hotelId) {
         List<Rating> ratingList = new ArrayList<>();
-        String query = "SELECT destinationId, userId, rating FROM ratings WHERE destinationId = " + destinationId;
+        String query = "SELECT hotelId, userId, rating FROM ratings WHERE hotelId = " + hotelId;
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet rs = statement.executeQuery(query)) {

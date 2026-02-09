@@ -18,7 +18,7 @@ public class PersonRepository {
     private static final Logger LOG = LoggerFactory.getLogger(PersonRepository.class);
     private static final AuditLogger auditLogger = AuditLogger.getAuditLogger(PersonRepository.class);
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public PersonRepository(DataSource dataSource) {
         this.dataSource = dataSource;

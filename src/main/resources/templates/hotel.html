@@ -6,33 +6,35 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Destination Details</title>
+    <title>Hotel Details</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1>Destination details</h1>
+    <h1>Hotel details</h1>
 
     <div class="row">
         <form class="col-5">
             <div class="form-group">
                 <b><label>ID:</label></b>
-                <label th:text="${destination.id}"></label>
+                <label th:text="${hotel.id}"></label>
             </div>
 
             <div class="form-group">
                 <b><label>Name:</label></b>
-                <label th:text="${destination.name}"></label>
+                <label th:text="${hotel.name}"></label>
             </div>
 
             <div class="form-group">
                 <b><label>City:</label></b>
-                <!-- If you only have cityId, change this to ${destination.cityId} -->
-                <label th:text="${destination.cityName}"></label>
+                <label th:text="${hotel.cityName}"></label>
             </div>
-
+            <div class="form-group">
+                <b><label>Address:</label></b>
+                <label th:text="${hotel.address}"></label>
+            </div>
             <div class="form-group">
                 <b><label>Description:</label></b>
-                <label style="text-align: justify; display: block;" th:text="${destination.description}"></label>
+                <label style="text-align: justify; display: block;" th:text="${hotel.description}"></label>
             </div>
             <div class="form-group">
                 <label>Rating:</label>
@@ -53,32 +55,30 @@
                 <label for="4">4</label>
                 <input type="radio" id="5" name="rating" value="5">
                 <label for="5">5</label>
-                <button id="rateDestination" class="btn btn-primary mt-2">Rate</button>
+                <button id="rateHotel" class="btn btn-primary mt-2">Rate</button>
             </div>
         </form>
     </div>
     <div class="mt-2 mb-2">
-        <a th:href="@{'/reservations/new/' + ${destination.id}}">Create a reservation</a>
+        <a th:href="@{'/reservations/new/' + ${hotel.id}}">Create a reservation</a>
     </div>
 
     <div class="mt-2 mb-2">
-        <a href="/destinations">Back to destinations</a>
-        &nbsp;|&nbsp;
-        <a th:href="@{/destinations/edit-form(id=${destination.id})}">Edit destination</a>
+        <a href="/hotels">Back to hotels</a>
     </div>
 
     <script th:inline="javascript">
-        const destinationId = [[${destination.id}]];
+        const hotelId = [[${hotel.id}]];
     </script>
     <script>
         window.addEventListener('load', function () {
 
-            document.getElementById("rateDestination").addEventListener("click", function () {
+            document.getElementById("rateHotel").addEventListener("click", function () {
                 const rating = document.querySelector('input[name="rating"]:checked').value;
                 fetch('/ratings', {
                     method: 'POST',
                     body: JSON.stringify({
-                        destinationId: destinationId,
+                        hotelId: hotelId,
                         rating: rating
                     }),
                     headers: {

@@ -15,7 +15,6 @@
     <form id="hotelForm" class="col-6" method="POST" th:action="@{/hotels/create}">
         <div class="form-group">
 
-            <!-- City -->
             <label for="cityId">City</label>
             <select id="cityId" name="cityId" class="form-control" required>
                 <option value="" selected disabled>Select city</option>
@@ -26,22 +25,18 @@
             </select>
             <span id="cityError" style="color: red; display: none;">Please select a city.</span>
 
-            <!-- Name -->
             <label class="mt-2" for="name">Hotel name</label>
             <input type="text" id="name" name="name" class="form-control" required/>
             <span id="nameError" style="color: red; display: none;">Name must be between 2 and 200 characters.</span>
 
-            <!-- Description -->
             <label class="mt-2" for="description">Description</label>
             <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
             <span id="descError" style="color: red; display: none;">Description must be between 10 and 511 characters.</span>
 
-            <!-- Address (optional in DB) -->
-            <label class="mt-2" for="address">Address (optional)</label>
-            <input type="text" id="address" name="address" class="form-control"/>
+            <label class="mt-2" for="address">Address</label>
+            <input type="text" id="address" name="address" class="form-control" required/>
             <span id="addrError" style="color: red; display: none;">Address must be 0–255 characters.</span>
 
-            <!-- Optional server-side flags -->
             <div class="text-danger mt-2" th:if="${hotelInvalid == true}">
                 Please check the form fields (name/description/address).
             </div>
@@ -72,13 +67,10 @@
 
         <tbody id="hotelsTableContent">
         <tr th:each="hotel : ${hotels}">
-            <td th:text="${hotel.id}"></td>
-            <td th:text="${hotel.name}"></td>
-
-            <!-- If Hotel has relation: hotel.city.name -->
-            <td th:text="${hotel.city != null ? hotel.city.name : hotel.cityName}"></td>
-
-            <td th:text="${hotel.address}"></td>
+            <td th:utext="${hotel.id}"></td>
+            <td th:utext="${hotel.name}"></td>
+            <td th:utext="${hotel.cityName}"></td>
+            <td th:utext="${hotel.address}"></td>
         </tr>
         </tbody>
     </table>
@@ -92,7 +84,6 @@
             const desc = document.getElementById("description").value.trim();
             const addr = document.getElementById("address").value.trim();
 
-            // City required
             if (!cityId) {
                 document.getElementById("cityError").style.display = "block";
                 isValid = false;
@@ -100,7 +91,6 @@
                 document.getElementById("cityError").style.display = "none";
             }
 
-            // Name 2..200
             if (name.length < 2 || name.length > 200) {
                 document.getElementById("nameError").style.display = "block";
                 isValid = false;
@@ -108,7 +98,6 @@
                 document.getElementById("nameError").style.display = "none";
             }
 
-            // Description 10..511
             if (desc.length < 10 || desc.length > 511) {
                 document.getElementById("descError").style.display = "block";
                 isValid = false;
@@ -116,7 +105,6 @@
                 document.getElementById("descError").style.display = "none";
             }
 
-            // Address 0..255 (optional)
             if (addr.length > 255) {
                 document.getElementById("addrError").style.display = "block";
                 isValid = false;

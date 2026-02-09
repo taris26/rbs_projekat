@@ -26,6 +26,6 @@ public class RatingsController {
         rating.setUserId(user.getId());
         ratingRepository.createOrUpdate(rating);
 
-        return "redirect:/destinations?id=" + rating.getDestinationId();
+        return "redirect:/hotels?id=" + rating.getHotelId();
     }
 }

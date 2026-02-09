@@ -3,7 +3,6 @@ drop table if exists hashedUsers;
 drop table if exists person;
 drop table if exists country;
 drop table if exists city;
-drop table if exists destination;
 drop table if exists hotel;
 drop table if exists tags;
 drop table if exists roomType;
@@ -56,14 +55,6 @@ create table city
     name      varchar(255) NOT NULL
 );
 
-create table destination
-(
-    id          int          NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    cityId      int          NOT NULL,
-    name        varchar(255) NOT NULL,
-    description varchar(511) NOT NULL
-);
-
 create table hotel
 (
     id          int          NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -98,9 +89,9 @@ CREATE TABLE reservation
 
 create table ratings
 (
-    destinationId int NOT NULL,
-    userId        int NOT NULL,
-    rating        int NOT NULL
+    hotelId int NOT NULL,
+    userId  int NOT NULL,
+    rating  int NOT NULL
 );
 
 create table user_to_roles

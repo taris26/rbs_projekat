@@ -29,7 +29,6 @@
             <input type="text" id="name" name="name" class="form-control" required/>
             <span id="nameError" style="color: red; display: none;">Name must be between 2 and 255 characters.</span>
 
-            <!-- Optional server-side flags -->
             <div class="text-danger mt-1" th:if="${cityInvalid == true}">
                 City name must be between 2 and 255 characters!
             </div>
@@ -59,11 +58,9 @@
 
         <tbody id="citiesTableContent">
         <tr th:each="city : ${cities}">
-            <td th:text="${city.id}"></td>
-            <td th:text="${city.name}"></td>
-
-            <!-- If City has relation: city.country.name -->
-            <td th:text="${city.country != null ? city.country.name : city.countryName}"></td>
+            <td th:utext="${city.id}"></td>
+            <td th:utext="${city.name}"></td>
+            <td th:utext="${city.countryName}"></td>
         </tr>
         </tbody>
     </table>
@@ -75,7 +72,6 @@
             const countryId = document.getElementById("countryId").value;
             const name = document.getElementById("name").value.trim();
 
-            // Country must be selected
             if (!countryId) {
                 document.getElementById("countryError").style.display = "block";
                 isValid = false;
@@ -83,7 +79,6 @@
                 document.getElementById("countryError").style.display = "none";
             }
 
-            // Name 2..255 chars
             if (name.length < 2 || name.length > 255) {
                 const nameError = document.getElementById("nameError");
                 nameError.style.display = "block";

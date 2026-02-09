@@ -4,6 +4,7 @@ public class Hotel {
 
     private Integer id;
     private Integer cityId;
+    private String cityName;
     private String name;
     private String description;
     private String address;
@@ -11,12 +12,30 @@ public class Hotel {
     public Hotel() {
     }
 
-    public Hotel(Integer id, Integer cityId, String name, String description, String address) {
+    public Hotel(Integer cityId, String name, String description, String address) {
         this.cityId = cityId;
         this.name = name;
         this.description = description;
         this.address = address;
     }
+
+    public Hotel(Integer id, Integer cityId, String name, String description, String address) {
+        this.id = id;
+        this.cityId = cityId;
+        this.name = name;
+        this.description = description;
+        this.address = address;
+    }
+
+    public Hotel(Integer id, Integer cityId, String name, String cityName, String description, String address) {
+        this.id = id;
+        this.cityId = cityId;
+        this.cityName = cityName;
+        this.name = name;
+        this.description = description;
+        this.address = address;
+    }
+
 
     public Integer getId() {
         return id;
@@ -56,5 +75,13 @@ public class Hotel {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 }

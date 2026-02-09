@@ -21,7 +21,7 @@ public class RoomRepository {
     private static final Logger LOG = LoggerFactory.getLogger(RoomRepository.class);
     private static final AuditLogger auditLogger = AuditLogger.getAuditLogger(RoomRepository.class);
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public RoomRepository(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -40,7 +40,6 @@ public class RoomRepository {
                 BigDecimal pricePerNight = rs.getBigDecimal(4);
                 int totalRooms = rs.getInt(5);
 
-                // Integer cityId, String name, String description, String address
                 roomTypes.add(new RoomType(id, hotelId, name, capacity, pricePerNight, totalRooms));
             }
         } catch (SQLException e) {
@@ -52,7 +51,8 @@ public class RoomRepository {
 
     public RoomType findByIdAndHotelId(int roomTypeId, int hotelId) {
         RoomType roomType = new RoomType();
-        String query = "SELECT name, capacity, pricePerNight, totalRooms FROM roomType WHERE roomType.id = " + roomTypeId;
+        String query = "SELECT name, capacity, pricePerNight, totalRooms FROM roomType WHERE roomType.id = " + roomTypeId +
+                " and roomType.hotelId = " + hotelId;
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
@@ -64,7 +64,7 @@ public class RoomRepository {
                 int totalRooms = rs.getInt(4);
 
                 roomType.setId(roomTypeId);
-                roomType.setHotelId(hotelId); //.add(new RoomType(roomTypeId, hotelId, name, capacity, pricePerNight, totalRooms));
+                roomType.setHotelId(hotelId);
                 roomType.setName(name);
                 roomType.setCapacity(capacity);
                 roomType.setPricePerNight(pricePerNight);

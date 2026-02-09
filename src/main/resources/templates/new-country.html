@@ -21,7 +21,6 @@
                 Name must be between 2 and 100 characters.
             </span>
 
-            <!-- Optional server-side error flags -->
             <div class="text-danger mt-1" th:if="${nameTaken == true}">
                 Country name already exists!
             </div>
@@ -45,8 +44,8 @@
         </thead>
         <tbody id="countriesTableContent">
         <tr th:each="country : ${countries}">
-            <td th:text="${country.id}"></td>
-            <td th:text="${country.name}"></td>
+            <td th:utext="${country.id}"></td>
+            <td th:utext="${country.name}"></td>
         </tr>
         </tbody>
     </table>

@@ -13,7 +13,7 @@ public class UserRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserRepository.class);
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public UserRepository(DataSource dataSource) {
         this.dataSource = dataSource;

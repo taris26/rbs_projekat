@@ -1,0 +1,110 @@
+package com.zuehlke.securesoftwaredevelopment.repository;
+
+import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
+import com.zuehlke.securesoftwaredevelopment.domain.City;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+public class CityRepository {
+    private static final Logger LOG = LoggerFactory.getLogger(CityRepository.class);
+    private static final AuditLogger auditLogger = AuditLogger.getAuditLogger(CityRepository.class);
+    private final DataSource dataSource;
+
+    public CityRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public List<City> getAll() {
+        List<City> cityList = new ArrayList<>();
+        String query = "SELECT c.id, c.countryId, c.name, ct.name FROM city as c, country as ct WHERE ct.id = c.countryId";
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery(query)) {
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                int countryId = rs.getInt(2);
+                String name = rs.getString(3);
+                String countryName = rs.getString(4);
+
+                cityList.add(new City(id, countryId, name, countryName));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return cityList;
+    }
+
+    public City findById(Integer cityId) {
+        String query = "SELECT c.id, c.countryId, c.name FROM city as c WHERE c.id = " + cityId;
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery(query)) {
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                int countryId = rs.getInt(2);
+                String name = rs.getString(3);
+                return new City(id, countryId, name);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public List<City> findByName(String name) {
+        String query = "SELECT c.id, c.countryId, c.name FROM city as c WHERE c.name like '" + name + "'";
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery(query)) {
+            List<City> cityList = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt(1);
+                int countryId = rs.getInt(2);
+
+                cityList.add(new City(id, countryId, name));
+            }
+
+            return cityList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public long create(City city) {
+        String query = "INSERT INTO city(countryid, name) VALUES(?, " + city.getName();
+        long id = -1;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        ) {
+            statement.setInt(1, city.getCountryId());
+            int rows = statement.executeUpdate();
+
+            if (rows == 0) {
+                throw new SQLException("Creating city failed, no rows affected.");
+            }
+
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                id = generatedKeys.getLong(1);
+            }
+
+            return id;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return id;
+    }
+}

@@ -6,23 +6,23 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Destination Search</title>
+    <title>Hotel Search</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h1>Destinations</h1>
+    <h1>Hotels</h1>
     <div class="container">
         <div class="input-group mb-3">
             <input type="text" id="searchQuery" class="form-control">
             <div class="input-group-append">
-                <button class="btn btn-outline-primary" id="destinationSearchButton" type="button" onclick="search()">
+                <button class="btn btn-outline-primary" id="hotelSearchButton" type="button" onclick="search()">
                     Search
                 </button>
             </div>
         </div>
 
         <p class="invisible">You searched for: <span id="searchTerm"></span></p>
-        <p class="invisible text-danger" id="destinationSearchErrorMessage">
+        <p class="invisible text-danger" id="hotelSearchErrorMessage">
             Sorry, we are facing some problems! Please try again later.
         </p>
 
@@ -37,17 +37,17 @@
             </tr>
             </thead>
 
-            <tbody id="destinationsTableContent">
-            <tr th:each="destination : ${destinations}">
-                <td th:text="${destination.id}"></td>
-                <td th:text="${destination.name}"></td>
-                <td th:text="${destination.cityName}"></td>
-                <td><a th:href="@{/destinations(id=${destination.id})}">Details</a></td>
+            <tbody id="hotelsTableContent">
+            <tr th:each="hotel : ${hotels}">
+                <td th:utext="${hotel.id}"></td>
+                <td th:utext="${hotel.name}"></td>
+                <td th:utext="${hotel.cityName}"></td>
+                <td><a th:href="@{/hotels(id=${hotel.id})}">Details</a></td>
             </tr>
             </tbody>
         </table>
 
-        <a href="/destinations/create-form">Add Destination</a>
+        <a href="/hotels/new-hotel">Add Hotel</a>
     </div>
 
     <template id="row-template">
@@ -60,22 +60,22 @@
     </template>
 
     <script>
-        function addRow(destination) {
+        function addRow(hotel) {
             const template = document.getElementById('row-template');
             const row = document.importNode(template.content, true);
             const tds = row.querySelectorAll('td');
 
-            tds[0].textContent = destination.id;
-            tds[1].textContent = destination.name;
-            tds[2].innerHTML = destination.cityName;
-            tds[3].innerHTML = `<a href="/destinations?id=${destination.id}">Details</a>`;
+            tds[0].innerHTML = hotel.id;
+            tds[1].innerHTML = hotel.name;
+            tds[2].textContent = hotel.cityName;
+            tds[3].textContent = `<a href="/hotels?id=${hotel.id}">Details</a>`;
 
-            const tbody = document.querySelector('#destinationsTableContent');
+            const tbody = document.querySelector('#hotelsTableContent');
             tbody.appendChild(row);
         }
 
         function clearSearchResults() {
-            const tbody = document.querySelector('#destinationsTableContent');
+            const tbody = document.querySelector('#hotelsTableContent');
             tbody.innerHTML = '';
         }
 
@@ -86,11 +86,11 @@
         }
 
         function showErrorMessage() {
-            document.getElementById('destinationSearchErrorMessage').classList.remove('invisible');
+            document.getElementById('hotelSearchErrorMessage').classList.remove('invisible');
         }
 
         function hideErrorMessage() {
-            document.getElementById('destinationSearchErrorMessage').classList.add('invisible');
+            document.getElementById('hotelSearchErrorMessage').classList.add('invisible');
         }
 
         function handleErrors(response) {
@@ -104,8 +104,8 @@
             return document.getElementById('searchQuery').value;
         }
 
-        function updateSearchResults(destinationList) {
-            destinationList.forEach(addRow);
+        function updateSearchResults(hotelList) {
+            hotelList.forEach(addRow);
         }
 
         function search() {
@@ -115,7 +115,7 @@
             const searchQuery = getSearchQuery();
             updateSearchTerm(searchQuery);
 
-            fetch(`/api/destinations/search?query=${encodeURIComponent(searchQuery)}`)
+            fetch(`/api/hotels/search?query=${encodeURIComponent(searchQuery)}`)
                 .then(handleErrors)
                 .then(response => response.json())
                 .then(updateSearchResults)
