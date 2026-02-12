@@ -82,7 +82,7 @@ public class CityRepository {
     }
 
     public long create(City city) {
-        String query = "INSERT INTO city(countryid, name) VALUES(?, " + city.getName();
+        String query = "INSERT INTO city(countryid, name) VALUES(?, '" + city.getName() + "')";
         long id = -1;
 
         try (Connection connection = dataSource.getConnection();
