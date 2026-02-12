@@ -5,7 +5,13 @@
 This repository contains a (demo) web application for a tourist agency with an emphasis on *secure* development practices and common web vulnerabilities (e.g., SQLi/XSS/CSRF) in a controlled learning environment.
 
 ---
+## Changelog
+| Version | Date        | Summary                                                                                                                                    |
+|---------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.1.0   | 09.02.2026. | Initial version.                                                                                                                           |
+| 0.1.1   | 12.02.2026. | Fixed the INSERT INTO statement in the `create` method in the CityRepository class. This chagne **does not** affect the SQLi and XSS task. |
 
+---
 ## Tech stack
 
 - Java 8
