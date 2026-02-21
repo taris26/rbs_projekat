@@ -24,7 +24,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .csrf()
+                    .requireCsrfProtectionMatcher(request -> request.getRequestURI().equals("/update-person") && request.getMethod().equals("POST"))
+                .and()
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/**").authenticated()
