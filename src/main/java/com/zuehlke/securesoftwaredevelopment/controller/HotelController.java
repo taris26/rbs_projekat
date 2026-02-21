@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,12 +40,14 @@ public class HotelController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasAuthority('VIEW_HOTEL_LIST')")
     public String showSearch(Model model) {
         model.addAttribute("hotels", hotelRepository.getAll());
         return "hotels";
     }
 
     @GetMapping("/hotels")
+    @PreAuthorize("hasAuthority('VIEW_HOTEL_LIST')")
     public String showHotels(@RequestParam(name = "id", required = false) String id, Model model, Authentication authentication) {
         if (id == null) {
             model.addAttribute("hotels", hotelRepository.getAll());
@@ -66,6 +70,7 @@ public class HotelController {
     }
 
     @GetMapping("/hotels/new-hotel")
+    @PreAuthorize("hasAuthority('CREATE_HOTEL')")
     public String newHotel(
             Model model,
             @RequestParam(value = "hotelInvalid", required = false) Boolean hotelInvalid,
@@ -84,6 +89,7 @@ public class HotelController {
     }
 
     @PostMapping("/hotels/create")
+    @PreAuthorize("hasAuthority('CREATE_HOTEL')")
     public String createHotel(
       @RequestParam Integer cityId,
       @RequestParam String name,
@@ -118,6 +124,7 @@ public class HotelController {
     }
 
     @GetMapping("/api/hotels/{hotelId}/room-types")
+    @PreAuthorize("hasAuthority('VIEW_HOTEL')")
     public ResponseEntity<List<RoomType>> getRoomTypesForHotel(@PathVariable Integer hotelId) {
         List<RoomType> result = roomRepository.getAllRoomTypes(hotelId);
         return ResponseEntity.ok(result);
@@ -125,6 +132,7 @@ public class HotelController {
 
     @GetMapping(value = "/api/hotels/search", produces = "application/json")
     @ResponseBody
+    @PreAuthorize("hasAuthority('VIEW_HOTEL_LIST')")
     public List<Hotel> search(@RequestParam("query") String query) throws SQLException {
         return hotelRepository.search(query);
     }

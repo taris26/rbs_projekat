@@ -1,6 +1,7 @@
 package com.zuehlke.securesoftwaredevelopment.controller;
 
 import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
+import com.zuehlke.securesoftwaredevelopment.config.SecurityUtil;
 import com.zuehlke.securesoftwaredevelopment.domain.Hotel;
 import com.zuehlke.securesoftwaredevelopment.domain.Reservation;
 import com.zuehlke.securesoftwaredevelopment.domain.RoomType;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,20 +41,24 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations/view")
+    @PreAuthorize("hasAuthority('VIEW_RESERVATION')")
     public String view(Model model, Authentication authentication) {
-        List<Reservation> allReservations = reservationRepository.getAll();
-
         User user = (User) authentication.getPrincipal();
         Integer userId = user.getId();
         List<Reservation> userReservations = reservationRepository.forUser(userId);
-
-        model.addAttribute("allReservations", allReservations);
         model.addAttribute("userReservations", userReservations);
+
+        // Only ADMIN can see all reservations
+        if (SecurityUtil.hasPermission("VIEW_PERSON")) {
+            List<Reservation> allReservations = reservationRepository.getAll();
+            model.addAttribute("allReservations", allReservations);
+        }
 
         return "reservations";
     }
 
     @GetMapping("/reservations/new/{id}")
+    @PreAuthorize("hasAuthority('CREATE_RESERVATION')")
     public String showReservation(
             @PathVariable int id,
             Model model,
@@ -70,6 +77,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations/create")
+    @PreAuthorize("hasAuthority('CREATE_RESERVATION')")
     public String createReservation(
             @RequestParam Integer hotelId,
             @RequestParam Integer roomTypeId,
@@ -126,6 +134,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reservations/delete")
+    @PreAuthorize("hasAuthority('VIEW_RESERVATION')")
     public String delete(@RequestParam Integer id) {
         reservationRepository.deleteById(id);
         return "redirect:/reservations/view";

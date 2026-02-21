@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -25,6 +27,7 @@ public class CountryController {
     }
 
     @GetMapping("/new-country")
+    @PreAuthorize("hasAuthority('CREATE_COUNTRY')")
     public String newCountry(
             Model model,
             @RequestParam(value = "nameTaken", required = false) Boolean nameTaken,
@@ -39,6 +42,7 @@ public class CountryController {
     }
 
     @PostMapping("/countries/create")
+    @PreAuthorize("hasAuthority('CREATE_COUNTRY')")
     public String create(@RequestParam String name) {
         if (name == null) {
             return "redirect:/new-country?nameInvalid=true";

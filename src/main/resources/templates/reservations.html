@@ -2,6 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
@@ -51,8 +52,9 @@
         </tbody>
     </table>
 
-    <hr class="mt-4 mb-4"/>
+    <hr class="mt-4 mb-4" sec:authorize="hasAuthority('VIEW_PERSON')"/>
 
+    <div sec:authorize="hasAuthority('VIEW_PERSON')">
     <h2>All reservations</h2>
 
     <table class="table table-striped" th:if="${allReservations != null && !#lists.isEmpty(allReservations)}">
@@ -91,6 +93,7 @@
         </tr>
         </tbody>
     </table>
+    </div>
 
 </div>
 </body>
