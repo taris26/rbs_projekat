@@ -4,6 +4,8 @@ import com.zuehlke.securesoftwaredevelopment.domain.Permission;
 import com.zuehlke.securesoftwaredevelopment.domain.User;
 import com.zuehlke.securesoftwaredevelopment.repository.UserRepository;
 import com.zuehlke.securesoftwaredevelopment.service.PermissionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,10 +22,13 @@ import java.util.List;
 @Component
 public class DatabaseAuthenticationProvider implements AuthenticationProvider {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseAuthenticationProvider.class);
+    private static final AuditLogger auditLogger = AuditLogger.getAuditLogger(DatabaseAuthenticationProvider.class);
+
     private final UserRepository userRepository;
     private final PermissionService permissionService;
 
-    private static final String PASSWORD_WRONG_MESSAGE = "Authentication failed for username='%s',password='%s'";
+    private static final String PASSWORD_WRONG_MESSAGE = "Authentication failed for username='%s'";
 
     public DatabaseAuthenticationProvider(UserRepository userRepository, PermissionService permissionService) {
         this.userRepository = userRepository;
@@ -42,10 +47,14 @@ public class DatabaseAuthenticationProvider implements AuthenticationProvider {
         if (success) {
             User user = userRepository.findUser(username);
             List<GrantedAuthority> grantedAuthorities = getGrantedAuthorities(user);
+            LOG.info("Successful authentication for username='{}'", username);
+            auditLogger.audit("Successful login for username=" + username);
             return new UsernamePasswordAuthenticationToken(user, password, grantedAuthorities);
         }
 
-        throw new BadCredentialsException(String.format(PASSWORD_WRONG_MESSAGE, username, password));
+        LOG.warn("Failed authentication attempt for username='{}'", username);
+        auditLogger.audit("Failed login attempt for username=" + username);
+        throw new BadCredentialsException(String.format(PASSWORD_WRONG_MESSAGE, username));
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(User user) {

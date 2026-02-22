@@ -5,6 +5,7 @@ import com.zuehlke.securesoftwaredevelopment.domain.User;
 import com.zuehlke.securesoftwaredevelopment.repository.RatingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class RatingsController {
     private static final Logger LOG = LoggerFactory.getLogger(RatingsController.class);
+    private static final AuditLogger auditLogger = AuditLogger.getAuditLogger(RatingsController.class);
 
     private RatingRepository ratingRepository;
 
@@ -26,6 +28,8 @@ public class RatingsController {
     public String createOrUpdateRating(@RequestBody Rating rating, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         rating.setUserId(user.getId());
+        LOG.info("Rating submitted: userId={}, hotelId={}, rating={}", user.getId(), rating.getHotelId(), rating.getRating());
+        auditLogger.audit("Rating submitted for hotelId=" + rating.getHotelId() + ", rating=" + rating.getRating());
         ratingRepository.createOrUpdate(rating);
 
         return "redirect:/hotels?id=" + rating.getHotelId();

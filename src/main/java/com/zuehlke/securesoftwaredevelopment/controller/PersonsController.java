@@ -40,6 +40,8 @@ public class PersonsController {
     @GetMapping("/persons/{id}")
     @PreAuthorize("hasAuthority('VIEW_PERSON')")
     public String person(@PathVariable int id, Model model) {
+        LOG.info("Viewing person with id={}", id);
+        auditLogger.audit("Viewed person details for personId=" + id);
         model.addAttribute("person", personRepository.get("" + id));
         model.addAttribute("username", userRepository.findUsername(id));
         return "person";
@@ -57,6 +59,8 @@ public class PersonsController {
     @DeleteMapping("/persons/{id}")
     @PreAuthorize("hasAuthority('VIEW_PERSON')")
     public ResponseEntity<Void> person(@PathVariable int id) {
+        LOG.warn("Deleting person and user with id={}", id);
+        auditLogger.audit("Deleting person and user with id=" + id);
         personRepository.delete(id);
         userRepository.delete(id);
 
@@ -71,9 +75,12 @@ public class PersonsController {
 
         // MANAGER and CUSTOMER can only update their own data
         if (!SecurityUtil.hasPermission("VIEW_PERSON") && currentUser.getId() != personId) {
+            LOG.warn("Unauthorized profile update attempt: userId={} tried to update personId={}", currentUser.getId(), personId);
             throw new AccessDeniedException("You can only update your own profile");
         }
 
+        LOG.info("Updating person with id={} by userId={}", personId, currentUser.getId());
+        auditLogger.audit("Updated person id=" + personId + " (username=" + username + ")");
         personRepository.update(person);
         userRepository.updateUsername(personId, username);
 
@@ -95,6 +102,8 @@ public class PersonsController {
     @ResponseBody
     @PreAuthorize("hasAuthority('VIEW_PERSONS_LIST')")
     public List<Person> searchPersons(@RequestParam String searchTerm) throws SQLException {
+        LOG.info("Person search with searchTerm='{}'", searchTerm);
+        auditLogger.audit("Searched persons with searchTerm=" + searchTerm);
         return personRepository.search(searchTerm);
     }
 }

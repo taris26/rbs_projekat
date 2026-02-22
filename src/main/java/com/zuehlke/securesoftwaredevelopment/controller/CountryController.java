@@ -56,6 +56,8 @@ public class CountryController {
         }
 
         countryRepository.create(new Country(name));
+        LOG.info("Country created: name='{}'", name);
+        auditLogger.audit("Created country: name=" + name);
 
         return "redirect:/new-country";
     }

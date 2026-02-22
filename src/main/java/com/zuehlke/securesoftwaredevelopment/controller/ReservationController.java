@@ -47,6 +47,7 @@ public class ReservationController {
         Integer userId = user.getId();
         List<Reservation> userReservations = reservationRepository.forUser(userId);
         model.addAttribute("userReservations", userReservations);
+        auditLogger.audit("Viewed reservations");
 
         // Only ADMIN can see all reservations
         if (SecurityUtil.hasPermission("VIEW_PERSON")) {
@@ -129,6 +130,9 @@ public class ReservationController {
         r.setTotalPrice(totalPrice);
 
         reservationRepository.create(r);
+        LOG.info("Reservation created: userId={}, hotelId={}, roomTypeId={}, startDate={}, endDate={}, totalPrice={}",
+                userId, hotelId, roomTypeId, startDate, endDate, totalPrice);
+        auditLogger.audit("Created reservation: hotelId=" + hotelId + ", userId=" + userId + ", totalPrice=" + totalPrice);
 
         return redirectPage + "?created=true";
     }
@@ -136,6 +140,8 @@ public class ReservationController {
     @PostMapping("/reservations/delete")
     @PreAuthorize("hasAuthority('VIEW_RESERVATION')")
     public String delete(@RequestParam Integer id) {
+        LOG.warn("Deleting reservation with id={}", id);
+        auditLogger.audit("Deleted reservation id=" + id);
         reservationRepository.deleteById(id);
         return "redirect:/reservations/view";
     }

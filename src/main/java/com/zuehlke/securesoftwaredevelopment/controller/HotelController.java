@@ -53,6 +53,7 @@ public class HotelController {
             model.addAttribute("hotels", hotelRepository.getAll());
             return "hotels";
         }
+        LOG.info("Viewing hotel with id={}", id);
         User user = (User) authentication.getPrincipal();
 
         List<Rating> ratings = ratingRepository.getAll(id);
@@ -119,6 +120,8 @@ public class HotelController {
 
         Hotel hotel = new Hotel(cityId, name, description, address);
         hotelRepository.create(hotel);
+        LOG.info("Hotel created: name='{}', cityId={}", name, cityId);
+        auditLogger.audit("Created hotel: name=" + name + ", cityId=" + cityId);
 
         return "redirect:/hotels/new-hotel";
     }
@@ -134,6 +137,7 @@ public class HotelController {
     @ResponseBody
     @PreAuthorize("hasAuthority('VIEW_HOTEL_LIST')")
     public List<Hotel> search(@RequestParam("query") String query) throws SQLException {
+        LOG.info("Hotel search with query='{}'", query);
         return hotelRepository.search(query);
     }
 }
